@@ -4,9 +4,7 @@ local marketNpc = nil
 function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
     AddTextEntry(entryTitle, textEntry)
     DisplayOnscreenKeyboard(1, entryTitle, "", inputText, "", "", "", maxLength or 30)
-    while UpdateOnscreenKeyboard() ~= 1 and UpdateOnscreenKeyboard() ~= 2 do
-        Wait(0)
-    end
+    while UpdateOnscreenKeyboard() ~= 1 and UpdateOnscreenKeyboard() ~= 2 do Wait(0) end
     if UpdateOnscreenKeyboard() ~= 2 then
         return GetOnscreenKeyboardResult()
     else
@@ -32,7 +30,7 @@ CreateThread(function()
                 name = 'sellToBlackMarket',
                 event = 'qb-blackmarket:openSellMenu',
                 icon = 'fas fa-hand-holding-usd',
-                label = 'Sälj till svart marknad',
+                label = 'Sell to Black Market',
             }
         }
     })
@@ -48,7 +46,7 @@ RegisterNetEvent('qb-blackmarket:openSellMenu', function()
             local label = (itemInfo and itemInfo.label or item) .. ' x' .. count
             table.insert(itemsToSell, {
                 title = label,
-                description = 'Pris per styck: $' .. price,
+                description = 'Price per unit: $' .. price,
                 icon = 'dollar-sign',
                 onSelect = function()
                     TriggerEvent('qb-blackmarket:sellAmountInput', { item = item, count = count, price = price })
@@ -58,13 +56,13 @@ RegisterNetEvent('qb-blackmarket:openSellMenu', function()
     end
 
     if #itemsToSell == 0 then
-        lib.notify({ title = 'Svart Marknad', description = 'Du har inga items att sälja.', type = 'error' })
+        lib.notify({ title = 'Black Market', description = 'You have no items to sell.', type = 'error' })
         return
     end
 
     lib.registerContext({
         id = 'blackmarket_menu',
-        title = 'Svart Marknad',
+        title = 'Black Market',
         options = itemsToSell
     })
 
@@ -72,7 +70,7 @@ RegisterNetEvent('qb-blackmarket:openSellMenu', function()
 end)
 
 RegisterNetEvent('qb-blackmarket:sellAmountInput', function(itemData)
-    local amountStr = KeyboardInput("BLACKMARKET_AMOUNT", "Hur många vill du sälja (max " .. itemData.count .. ")?", "", 5)
+    local amountStr = KeyboardInput("BLACKMARKET_AMOUNT", "How many do you want to sell? (Max: " .. itemData.count .. ")", "", 5)
     local amount = tonumber(amountStr)
 
     if amount and amount > 0 and amount <= itemData.count then
@@ -89,7 +87,7 @@ RegisterNetEvent('qb-blackmarket:sellAmountInput', function(itemData)
         lib.progressCircle({
             duration = 5000,
             position = 'bottom',
-            label = 'Säljer till svart marknad...',
+            label = 'Selling to the black market...',
             useWhileDead = false,
             canCancel = false,
             disable = {
@@ -99,13 +97,13 @@ RegisterNetEvent('qb-blackmarket:sellAmountInput', function(itemData)
             }
         })
 
-        Wait(0)
+        Wait(0) ##Change time until items are removed from player and player is given money.
 
         ClearPedTasks(playerPed)
         ClearPedTasks(npcPed)
 
         TriggerServerEvent('qb-blackmarket:sellItem', itemData.item, amount)
     else
-        lib.notify({ title = 'Svart Marknad', description = 'Ogiltigt antal eller avbröt.', type = 'error' })
+        lib.notify({ title = 'Black Market', description = 'Invalid amount or cancelled.', type = 'error' })
     end
 end)

@@ -97,7 +97,7 @@ RegisterNetEvent('qb-blackmarket:sellAmountInput', function(itemData)
             }
         })
 
-        Wait(0) ##Change time until items are removed from player and player is given money.
+        Wait(0) 
 
         ClearPedTasks(playerPed)
         ClearPedTasks(npcPed)
